@@ -1,5 +1,6 @@
 package com.sky.handler;
 
+import com.sky.constant.MessageConstant;
 import com.sky.exception.BaseException;
 import com.sky.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +38,10 @@ public class GlobalExceptionHandler {
         String s = ex.getMessage();
         if (s.contains("Duplicate entry")){
             String[] t = s.split(" ");
-            return Result.error(t[2]+"已存在");
+            return Result.error(t[2]+MessageConstant.ALREADY_EXIST);
 
         }else {
-            return Result.error("未知错误");
+            return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
     }
 }
