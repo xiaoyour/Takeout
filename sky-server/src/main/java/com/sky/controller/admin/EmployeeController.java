@@ -101,4 +101,18 @@ public class EmployeeController {
         log.info("{}:进行员工分页查询,参数为:{}", BaseContext.getCurrentId(),employeePageQueryDTO);
         return employeeService.EmployeePageQuery(employeePageQueryDTO);
     }
+
+    /**
+     * 启用/禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用/禁用员工账号")
+    public Result StartOrClose(@PathVariable Integer status,Long id){
+        log.info("启用或禁用员工账号：id:{}的状态改为：{}",id,status);
+        employeeService.StartOrClose(status,id);
+        return Result.success();
+    }
 }

@@ -8,6 +8,13 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 
 public interface EmployeeService {
+    /**
+     * 开启或禁用员工账号
+     * @param status
+     * @param id
+     */
+    void StartOrClose(Integer status, Long id);
+
 
     /**
      * 员工登录
