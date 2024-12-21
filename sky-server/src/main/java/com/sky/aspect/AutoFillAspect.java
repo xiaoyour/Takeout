@@ -1,6 +1,7 @@
 package com.sky.aspect;
 
 import com.sky.annotation.AutoFill;
+import com.sky.constant.AutoFillConstant;
 import com.sky.context.BaseContext;
 import com.sky.enumeration.OperationType;
 import lombok.extern.slf4j.Slf4j;
@@ -55,16 +56,16 @@ public class AutoFillAspect {
 //        根据不同的数据库操作类型，通过反射为数据赋值
         if (operationType == OperationType.UPDATE){
             Class<?> entityClass = entity.getClass();
-            Method setUpdateTime = entityClass.getDeclaredMethod("setUpdateTime", LocalDateTime.class);
-            Method setUpdateUser = entityClass.getDeclaredMethod("setUpdateUser", Long.class);
+            Method setUpdateTime = entityClass.getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
+            Method setUpdateUser = entityClass.getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
             setUpdateTime.invoke(entity,updateTime);
             setUpdateUser.invoke(entity,updateUser);
         }else if (operationType == OperationType.INSERT){
             Class<?> entityClass = entity.getClass();
-            Method setUpdateTime = entityClass.getDeclaredMethod("setUpdateTime", LocalDateTime.class);
-            Method setUpdateUser = entityClass.getDeclaredMethod("setUpdateUser", Long.class);
-            Method setCreateUser = entityClass.getDeclaredMethod("setCreateUser", Long.class);
-            Method setCreateTime = entityClass.getDeclaredMethod("setCreateTime", LocalDateTime.class);
+            Method setUpdateTime = entityClass.getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
+            Method setUpdateUser = entityClass.getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+            Method setCreateUser = entityClass.getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
+            Method setCreateTime = entityClass.getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
             setUpdateTime.invoke(entity,updateTime);
             setUpdateUser.invoke(entity,updateUser);
             setCreateTime.invoke(entity,createTime);
