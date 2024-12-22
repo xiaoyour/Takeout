@@ -8,7 +8,7 @@
     </insert>
     <insert id="addFlavor">
         insert into dish_flavor
-        <foreach collection="flavors" item="f">
+        <foreach collection="flavors" item="f" separator=",">
             (dish_id, name, value)
         VALUES (#{f.dishId},#{f.name},#{f.value})
 
