@@ -35,7 +35,6 @@ public interface DishMapper {
      * 添加菜品对应的口味
      * @param flavors
      */
-    @AutoFill(OperationType.INSERT)
     void addFlavor(List<DishFlavor> flavors);
 
     /**
@@ -57,5 +56,11 @@ public interface DishMapper {
      * 根据ID删除菜品
      */
     @Delete("DELETE from dish where id = #{id}")
-    void delDishById();
+    void delDishById(Long id);
+
+    /**
+     * 根据ID列表批量删除菜品
+     * @param ids
+     */
+    void delDishByIdBatch(List<Long> ids);
 }

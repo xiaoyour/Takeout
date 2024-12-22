@@ -51,7 +51,7 @@ public class DishServiceImpl implements DishService {
 
 //        向菜品表插入一条数据
         Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO, dish);
+        BeanUtils.copyProperties(dishDTO,dish);
         dishMapper.addDish(dish);
 //        向口味表插入多条数据
         if (dishDTO.getFlavors()!=null && !dishDTO.getFlavors().isEmpty()) {
@@ -82,6 +82,7 @@ public class DishServiceImpl implements DishService {
      * @return
      */
     @Override
+    @Transactional
     public void deleteBatch(List<Long> ids) {
 //        判断菜品列表是否有在售的菜品
         for (Long id:ids){
@@ -92,15 +93,18 @@ public class DishServiceImpl implements DishService {
         }
 //        判断是否有和套餐关联的菜品
         List<Long> byDishId = setmealDishMapper.getByDishId(ids);
-        if (byDishId!=null &&byDishId.size() >0) {
+        if (byDishId!=null && !byDishId.isEmpty()) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
 //        删除菜品数据
 //        删除菜品相关联的口味数据
-        for (Long id:ids){
-            dishMapper.delDishById();
-            dishFlavorMapper.deleteByDishId(id);
-        }
+//        for (Long id:ids){
+//            dishMapper.delDishById(id);
+//            dishFlavorMapper.deleteByDishId(id);
+//        }
+//        对上面的代码进行优化：批量删除，不用进行循环
+        dishMapper.delDishByIdBatch(ids);
+        dishFlavorMapper.deleteByDishIdBatch(ids);
 
     }
 }
