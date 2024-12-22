@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 
-@Api("通用控制")
+@Api(tags = "通用控制")
 @RestController
 @Slf4j
 public class CommonController {
