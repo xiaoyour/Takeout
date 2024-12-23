@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -106,5 +108,58 @@ public class DishServiceImpl implements DishService {
         dishMapper.delDishByIdBatch(ids);
         dishFlavorMapper.deleteByDishIdBatch(ids);
 
+    }
+
+    /**
+     * 根据ID查询菜品及口味
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getDishByIdWithFlavor(Long id) {
+        Dish dish = dishMapper.getById(id);
+        List<DishFlavor> dishFlavor = dishMapper.getDishFlavorById(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish,dishVO);
+        dishVO.setFlavors(dishFlavor);
+        return dishVO;
+    }
+
+    /**
+     * "修改菜品及其口味"
+     * @param dishDTO
+     */
+
+    public void update(DishDTO dishDTO){
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+//        更新菜品基本信息
+        dishMapper.update(dish);
+//        更新口味信息：先删后加
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+        if (dishDTO.getFlavors()!=null && !dishDTO.getFlavors().isEmpty()){
+            List<DishFlavor> flavors = dishDTO.getFlavors();
+            flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishDTO.getId()));
+            dishMapper.addFlavor(flavors);
+        }
+
+    }
+    /**
+     * 根据分类ID查询菜品
+     * @param categoryId
+     * @return
+     */
+    public List<Dish> getByCategoryId(Long categoryId){
+            List<Dish> dish = dishMapper.getByCategoryId(categoryId);
+
+//            这里发生了同步修改异常，在iterator中用list的remove会导致it和list的修改次数变量不同导致异常
+//        解决方式:重写了SQL
+//        dish.forEach(dish1 -> {
+//            if (dish1.getStatus() == StatusConstant.DISABLE) {
+//
+//            }
+//        }
+//        );
+        return dish;
     }
 }

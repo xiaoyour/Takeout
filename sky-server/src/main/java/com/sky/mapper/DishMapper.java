@@ -63,4 +63,23 @@ public interface DishMapper {
      * @param ids
      */
     void delDishByIdBatch(List<Long> ids);
+
+    /**
+     * 根据ID查询菜品口味
+     * @param id
+     * @return
+     */
+    @Select("select * from dish_flavor where dish_id = #{id}")
+    List<DishFlavor> getDishFlavorById(Long id);
+
+    /**
+     * 更新菜品基本信息
+     * @param dish
+     */
+    @AutoFill(OperationType.UPDATE)
+    void update(Dish dish);
+
+
+    @Select("select * from dish where category_id = #{categoryId} and status = 1")
+    List<Dish> getByCategoryId(Long categoryId);
 }
