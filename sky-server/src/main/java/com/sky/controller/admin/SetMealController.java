@@ -37,7 +37,7 @@ public class SetMealController {
     @ApiOperation("开始新增套餐")
     @PostMapping
     public Result insert(@RequestBody SetmealDTO setmealDTO) {
-        log.info("开始新增套餐");
+        log.info("开始新增套餐：{}",setmealDTO);
         setMealService.insert(setmealDTO);
         return Result.success();
     }
@@ -52,7 +52,7 @@ public class SetMealController {
     @GetMapping("/page")
     @ApiOperation("套餐分页查询")
     public Result pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
-        log.info("开始套餐分页查询");
+        log.info("开始套餐分页查询:{}",setmealPageQueryDTO);
         Page<Setmeal> page = setMealService.pageQuery(setmealPageQueryDTO);
         PageResult pageResult = new PageResult(page.getPageSize(), page.getResult());
         return Result.success(pageResult);
@@ -67,7 +67,7 @@ public class SetMealController {
     @DeleteMapping
     @ApiOperation("批量删除套餐")
     public Result deleteBatch(@RequestParam List<Long> ids) {
-        log.info("批量删除套餐");
+        log.info("批量删除套餐:{}",ids);
         setMealService.deleteBatch(ids);
         return Result.success();
     }
@@ -81,7 +81,7 @@ public class SetMealController {
     @GetMapping("/{id}")
     @ApiOperation("根据ID查询套餐")
     public Result<SetmealVO> getById(@PathVariable Long id) {
-        log.info("开始根据ID查询套餐");
+        log.info("开始根据ID查询套餐:{}",id);
         SetmealVO setmealVO = setMealService.getById(id);
         return Result.success(setmealVO);
     }
@@ -94,8 +94,23 @@ public class SetMealController {
     @PutMapping
     @ApiOperation("修改套餐内容")
     public Result updateSetMeal(@RequestBody SetmealDTO setmealDTO) {
-        log.info("开始修改套餐内容");
+        log.info("开始修改套餐内容:{}",setmealDTO);
         setMealService.updateSetMeal(setmealDTO);
+        return Result.success();
+    }
+
+
+    /**
+     * "套餐起售或停售"
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("套餐起售或停售")
+    public Result startOrStop(@PathVariable Integer status,@RequestParam Long id){
+        log.info("套餐起售或停售:{},{}",status,id);
+        setMealService.startOrStop(status,id);
         return Result.success();
     }
 

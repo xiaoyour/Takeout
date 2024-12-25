@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.StatusConstant;
@@ -12,6 +11,7 @@ import com.sky.entity.SetmealDish;
 import com.sky.exception.BaseException;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.SetmealEnableFailedException;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.service.SetMealService;
@@ -22,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -37,6 +39,8 @@ public class SetMealServiceImpl implements SetMealService {
     SetmealDishMapper setmealDishMapper;
     @Autowired
     SetmealMapper setmealMapper;
+    @Autowired
+    DishMapper dishMapper;
 
     /**
      * 新增套餐
@@ -136,5 +140,37 @@ public class SetMealServiceImpl implements SetMealService {
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmeal.getId()));
         setmealDishMapper.insert(setmealDishes);
+    }
+
+
+    /**
+     * "套餐起售或停售"
+     */
+    @Override
+    @Transactional
+    public void startOrStop(Integer status,Long id) {
+//        套餐可以直接停售
+        setmealMapper.setStatusById(status,id);
+
+
+//        套餐内如果有菜品停售则不能起售
+        List<SetmealDish> byDishId = setmealDishMapper.getByDishId(id);
+        List<Long> longs = new ArrayList<>();
+        byDishId.forEach(setmealDish -> {
+            Long dishId = setmealDish.getDishId();
+            longs.add(dishId);
+
+        });
+
+//        通过id列表查询菜品的信息
+        List<Dish> list = dishMapper.getByIds(longs);
+        if (!list.isEmpty()) {
+            list.forEach(dish -> {
+                if (Objects.equals(dish.getStatus(), StatusConstant.DISABLE)) {
+                    throw new BaseException("套餐中有菜品停售，无法起售套餐");
+                }
+            });
+        }
+        setmealMapper.setStatusById(status,id);
     }
 }
