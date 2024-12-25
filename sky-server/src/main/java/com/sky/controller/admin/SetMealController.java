@@ -8,15 +8,14 @@ import com.sky.entity.Setmeal;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetMealService;
+import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 套餐控制类
@@ -32,11 +31,12 @@ public class SetMealController {
 
     /**
      * 新增套餐
+     *
      * @return
      */
     @ApiOperation("开始新增套餐")
     @PostMapping
-    public Result insert(@RequestBody SetmealDTO setmealDTO){
+    public Result insert(@RequestBody SetmealDTO setmealDTO) {
         log.info("开始新增套餐");
         setMealService.insert(setmealDTO);
         return Result.success();
@@ -45,12 +45,13 @@ public class SetMealController {
 
     /**
      * "套餐分页查询"
+     *
      * @param setmealPageQueryDTO
      * @return
      */
     @GetMapping("/page")
     @ApiOperation("套餐分页查询")
-    public Result pageQuery(SetmealPageQueryDTO setmealPageQueryDTO){
+    public Result pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         log.info("开始套餐分页查询");
         Page<Setmeal> page = setMealService.pageQuery(setmealPageQueryDTO);
         PageResult pageResult = new PageResult(page.getPageSize(), page.getResult());
@@ -59,14 +60,43 @@ public class SetMealController {
 
     /**
      * 批量删除套餐
+     *
      * @param ids
      * @return
      */
     @DeleteMapping
     @ApiOperation("批量删除套餐")
-    public Result deleteBatch(@RequestParam List<Long> ids){
+    public Result deleteBatch(@RequestParam List<Long> ids) {
         log.info("批量删除套餐");
         setMealService.deleteBatch(ids);
         return Result.success();
     }
+
+    /**
+     * "根据ID查询套餐"
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据ID查询套餐")
+    public Result<SetmealVO> getById(@PathVariable Long id) {
+        log.info("开始根据ID查询套餐");
+        SetmealVO setmealVO = setMealService.getById(id);
+        return Result.success(setmealVO);
+    }
+
+    /**
+     * "修改套餐内容"
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改套餐内容")
+    public Result updateSetMeal(@RequestBody SetmealDTO setmealDTO) {
+        log.info("开始修改套餐内容");
+        setMealService.updateSetMeal(setmealDTO);
+        return Result.success();
+    }
+
 }

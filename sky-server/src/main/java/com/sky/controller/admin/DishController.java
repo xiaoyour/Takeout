@@ -32,7 +32,7 @@ public class DishController {
     @PostMapping
     @ApiOperation("新增菜品及口味")
     public Result addDish(@RequestBody DishDTO dishDTO){
-        log.info("开始新增菜品及口味");
+        log.info("开始新增菜品及口味:{}",dishDTO);
         dishService.addDishWithFlavor(dishDTO);
 
         return Result.success();
@@ -45,7 +45,7 @@ public class DishController {
     @GetMapping("/page")
     @ApiOperation("菜品分页查询")
     public Result<PageResult> DishPageQuery(DishPageQueryDTO dishPageQueryDTO){
-
+        log.info("开始菜品分类查询");
          PageResult pageResult  =dishService.dishPageQuery(dishPageQueryDTO);
             return Result.success(pageResult);
 
@@ -59,7 +59,7 @@ public class DishController {
     @DeleteMapping
     @ApiOperation("批量删除菜品")
     public Result deleteBatch(@RequestParam List<Long> ids){
-        log.info("批量删除菜品");
+        log.info("批量删除菜品:{}",ids);
         dishService.deleteBatch(ids);
         return Result.success();
 
@@ -73,7 +73,7 @@ public class DishController {
     @ApiOperation("根据ID查询菜品及口味")
     @GetMapping({"/{id}"})
     public Result<DishVO> getDishById(@PathVariable Long id){
-        log.info("开始根据ID查询菜品及口味");
+        log.info("开始根据ID查询菜品及口味:{}",id);
         DishVO dishVO =dishService.getDishByIdWithFlavor(id);
         return Result.success(dishVO);
     }
@@ -85,7 +85,7 @@ public class DishController {
     @ApiOperation("修改菜品及其口味")
     @PutMapping
     public Result update(@RequestBody DishDTO dishDTO){
-        log.info("修改菜品及其口味");
+        log.info("修改菜品及其口味:{}",dishDTO);
         dishService.update(dishDTO);
         return Result.success();
     }
@@ -99,8 +99,21 @@ public class DishController {
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
     public Result<List<Dish>> getByCategoryId(Long categoryId){
-        log.info("根据分类id查询菜品");
+        log.info("根据分类id查询菜品:{}",categoryId);
         List<Dish> dish =dishService.getByCategoryId(categoryId);
         return Result.success(dish);
+    }
+
+    /**
+     * 菜品起售/停售
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("菜品起售/停售")
+    public Result startOrStop(@PathVariable Integer status,@RequestParam Long id){
+        log.info("开始菜品起售/停售：{}",status);
+        dishService.startOrStop(status,id);
+        return Result.success();
     }
 }

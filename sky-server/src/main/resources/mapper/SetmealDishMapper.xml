@@ -6,7 +6,6 @@
             insert into setmeal_dish (setmeal_id, dish_id, name, price, copies) VALUES
         <foreach collection="setmealDish" item="dish" separator=",">
             (#{dish.setmealId},#{dish.dishId},#{dish.name},#{dish.price},#{dish.copies})
-
         </foreach>
     </insert>
     <delete id="delById">
@@ -17,7 +16,7 @@
 
 
     </delete>
-    <select id="getByDishId" resultType="java.lang.Long">
+    <select id="getByDishIds" resultType="java.lang.Long">
 
     select setmeal_id from setmeal_dish where dish_id in 
         <foreach collection="ids" item="DishId" separator="," open="(" close=")" >

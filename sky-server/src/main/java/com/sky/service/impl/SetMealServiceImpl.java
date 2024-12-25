@@ -1,23 +1,28 @@
 package com.sky.service.impl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.BaseException;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.service.SetMealService;
+import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -92,5 +97,44 @@ public class SetMealServiceImpl implements SetMealService {
         setmealMapper.delById(ids);
         setmealDishMapper.delById(ids);
 
+    }
+
+    /**
+     * 根据ID查询套餐
+     * @return
+     */
+    @Override
+    public SetmealVO getById(Long id) {
+        SetmealVO setmealVO = new SetmealVO();
+//        查询套餐信息并赋给VO
+        List<Setmeal> byIds = setmealMapper.getByIds(Collections.singletonList(id));
+        Setmeal setmeal = byIds.get(0);
+        BeanUtils.copyProperties(setmeal,setmealVO);
+//        查询套餐关联菜品信息并赋给VO
+        List<SetmealDish> dish = setmealDishMapper.getByDishId(id);
+        setmealVO.setSetmealDishes(dish);
+
+
+        return setmealVO;
+    }
+
+    @Override
+    @Transactional
+    public void updateSetMeal(SetmealDTO setmealDTO) {
+//        先判断菜品名称是否唯一
+        Long id = setmealMapper.getByName(setmealDTO.getName());
+        if (id!=null){throw new BaseException("套菜名称重复");}
+//        修改后的菜品默认不起售，将其status设为DISABLE(0)
+            setmealDTO.setStatus(StatusConstant.DISABLE);
+//        注意Update需要主键回显以及添加@Autofill
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        setmealMapper.update(setmeal);
+//        菜品修改采用先删后加
+        setmealDishMapper.delById(Collections.singletonList(setmealDTO.getId()));
+//        为菜品添加套餐ID
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmeal.getId()));
+        setmealDishMapper.insert(setmealDishes);
     }
 }
