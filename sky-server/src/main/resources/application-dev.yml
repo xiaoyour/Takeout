@@ -13,4 +13,4 @@ sky:
     bucket-name: sky-take-out-xiaoyou
   wechat:
     appid: wx54eb864ef255b32a
-    secret: ${wechat_secret}
+    secret: ${WECHAT_SECRET}
