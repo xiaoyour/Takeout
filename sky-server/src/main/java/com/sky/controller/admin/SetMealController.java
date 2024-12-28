@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class SetMealController {
      */
     @ApiOperation("开始新增套餐")
     @PostMapping
+    @CacheEvict(cacheNames = "setMealCache", key = "#setmealDTO.categoryId")
     public Result insert(@RequestBody SetmealDTO setmealDTO) {
         log.info("开始新增套餐：{}",setmealDTO);
         setMealService.insert(setmealDTO);
@@ -51,6 +53,7 @@ public class SetMealController {
      */
     @GetMapping("/page")
     @ApiOperation("套餐分页查询")
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public Result pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         log.info("开始套餐分页查询:{}",setmealPageQueryDTO);
         Page<Setmeal> page = setMealService.pageQuery(setmealPageQueryDTO);
@@ -66,6 +69,7 @@ public class SetMealController {
      */
     @DeleteMapping
     @ApiOperation("批量删除套餐")
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public Result deleteBatch(@RequestParam List<Long> ids) {
         log.info("批量删除套餐:{}",ids);
         setMealService.deleteBatch(ids);
@@ -93,6 +97,7 @@ public class SetMealController {
      */
     @PutMapping
     @ApiOperation("修改套餐内容")
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public Result updateSetMeal(@RequestBody SetmealDTO setmealDTO) {
         log.info("开始修改套餐内容:{}",setmealDTO);
         setMealService.updateSetMeal(setmealDTO);
@@ -108,6 +113,7 @@ public class SetMealController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("套餐起售或停售")
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public Result startOrStop(@PathVariable Integer status,@RequestParam Long id){
         log.info("套餐起售或停售:{},{}",status,id);
         setMealService.startOrStop(status,id);
