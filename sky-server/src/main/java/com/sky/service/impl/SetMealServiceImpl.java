@@ -71,6 +71,7 @@ public class SetMealServiceImpl implements SetMealService {
 
     /**
      * 套餐分页查询
+     *
      * @param setmealPageQueryDTO
      * @return
      */
@@ -83,21 +84,23 @@ public class SetMealServiceImpl implements SetMealService {
 
     /**
      * 批量删除套餐
+     *
      * @param ids
      */
     @Transactional
     @Override
     public void deleteBatch(List<Long> ids) {
 //        检查ids是否为空
-        if (ids == null || ids.isEmpty()){
+        if (ids == null || ids.isEmpty()) {
             return;
         }
 //        如果套餐在售则不能删除
-       List<Setmeal> list = setmealMapper.getByIds(ids);
-       list.forEach(setmeal -> {if(setmeal.getStatus() == StatusConstant.DISABLE){
-           throw new DeletionNotAllowedException("在售套餐不能删除！");
-       }
-       });
+        List<Setmeal> list = setmealMapper.getByIds(ids);
+        list.forEach(setmeal -> {
+            if (setmeal.getStatus() == StatusConstant.DISABLE) {
+                throw new DeletionNotAllowedException("在售套餐不能删除！");
+            }
+        });
 //        同时删除套餐和套餐关联的菜品
         setmealMapper.delById(ids);
         setmealDishMapper.delById(ids);
@@ -106,6 +109,7 @@ public class SetMealServiceImpl implements SetMealService {
 
     /**
      * 根据ID查询套餐
+     *
      * @return
      */
     @Override
@@ -114,7 +118,7 @@ public class SetMealServiceImpl implements SetMealService {
 //        查询套餐信息并赋给VO
         List<Setmeal> byIds = setmealMapper.getByIds(Collections.singletonList(id));
         Setmeal setmeal = byIds.get(0);
-        BeanUtils.copyProperties(setmeal,setmealVO);
+        BeanUtils.copyProperties(setmeal, setmealVO);
 //        查询套餐关联菜品信息并赋给VO
         List<SetmealDish> dish = setmealDishMapper.getByDishId(id);
         setmealVO.setSetmealDishes(dish);
@@ -128,12 +132,14 @@ public class SetMealServiceImpl implements SetMealService {
     public void updateSetMeal(SetmealDTO setmealDTO) {
 //        先判断菜品名称是否唯一
         Long id = setmealMapper.getByName(setmealDTO.getName());
-        if (id!=null){throw new BaseException("套菜名称重复");}
+        if (id != null && !id.equals(setmealDTO.getId())) {
+            throw new BaseException("套菜名称重复");
+        }
 //        修改后的菜品默认不起售，将其status设为DISABLE(0)
-            setmealDTO.setStatus(StatusConstant.DISABLE);
+        setmealDTO.setStatus(StatusConstant.DISABLE);
 //        注意Update需要主键回显以及添加@Autofill
         Setmeal setmeal = new Setmeal();
-        BeanUtils.copyProperties(setmealDTO,setmeal);
+        BeanUtils.copyProperties(setmealDTO, setmeal);
         setmealMapper.update(setmeal);
 //        菜品修改采用先删后加
         setmealDishMapper.delById(Collections.singletonList(setmealDTO.getId()));
@@ -149,9 +155,9 @@ public class SetMealServiceImpl implements SetMealService {
      */
     @Override
     @Transactional
-    public void startOrStop(Integer status,Long id) {
+    public void startOrStop(Integer status, Long id) {
 //        套餐可以直接停售
-        setmealMapper.setStatusById(status,id);
+        setmealMapper.setStatusById(status, id);
 
 
 //        套餐内如果有菜品停售则不能起售
@@ -172,11 +178,12 @@ public class SetMealServiceImpl implements SetMealService {
                 }
             });
         }
-        setmealMapper.setStatusById(status,id);
+        setmealMapper.setStatusById(status, id);
     }
 
     /**
      * 条件查询
+     *
      * @param setmeal
      * @return
      */
@@ -187,6 +194,7 @@ public class SetMealServiceImpl implements SetMealService {
 
     /**
      * 根据id查询菜品选项
+     *
      * @param id
      * @return
      */
