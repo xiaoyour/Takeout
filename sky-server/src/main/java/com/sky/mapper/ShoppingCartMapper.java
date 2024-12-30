@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface ShoppingCartMapper {
     /**
-     * 获得购物车信息
+     * 获得单个购物车信息
      * @param shoppingCart
      * @return
      */
