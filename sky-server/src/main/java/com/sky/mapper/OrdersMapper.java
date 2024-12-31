@@ -6,6 +6,9 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Mapper
 public interface OrdersMapper {
 
@@ -33,4 +36,6 @@ public interface OrdersMapper {
     Integer countStatus(Integer status);
 
     void update(Orders orders);
+    @Select("select * from orders where status = #{pendingPayment} and order_time < #{time}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer pendingPayment, LocalDateTime time);
 }
